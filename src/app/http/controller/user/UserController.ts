@@ -46,7 +46,7 @@ class User {
         const sessionInfo = await UserHelper.verifySession(session_id);
 
         if (! sessionInfo)
-            return
+            return await responseHelper.badRequest(res, {error: 'your session its not valid.'});
 
         const UserInfo = await UserHelper.existEmail(sessionInfo.email);
 
