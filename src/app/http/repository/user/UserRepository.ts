@@ -30,8 +30,12 @@ class repository {
             login_made_in: new Date(),
             disconnected: null,
         });
-
     }
+
+    async seeAccount (email: string) {
+        return await UserModel.findOne({email: email, deleted_at: null}).select({__v: 0, _id: 0, password: 0});
+    }
+
 }
 
 export default new repository();

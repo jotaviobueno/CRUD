@@ -32,10 +32,31 @@ class User {
         if (! await UserHelper.comparePassword(password, UserInfo.password))
             return await responseHelper.notAuthorized(res, {error: 'invalid credentials'});
 
-        const session_id = await repository.createSession(email);
+        const getSessionToken = await repository.createSession(email);
 
-        if (session_id)
-            return await responseHelper.notAuthorized(res, {success: session_id.session_token});
+        if (getSessionToken)
+            return await responseHelper.success(res, {session_token: getSessionToken.session_token});
+
+        return await responseHelper.unprocessableEntity(res, {error: 'it was not possible to proceed'});
+    }
+
+    async seeAccount (req: Request, res: Response) {
+        const {session_id} = req.headers;
+
+        const sessionInfo = await UserHelper.verifySession(session_id);
+
+        if (! sessionInfo)
+            return
+
+        const UserInfo = await UserHelper.existEmail(sessionInfo.email);
+
+        if (! UserInfo)
+            return await responseHelper.badRequest(res, {error: 'email not found.'});
+
+        const getUserInformation = await repository.seeAccount(UserInfo.email);
+
+        if (getUserInformation)
+            return await responseHelper.success(res, {account_info: getUserInformation});
 
         return await responseHelper.unprocessableEntity(res, {error: 'it was not possible to proceed'});
     }
