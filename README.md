@@ -1,2 +1,2 @@
 # CRUD
-my first CRUD in typeScript :).
+my first CRUD in typeScript
